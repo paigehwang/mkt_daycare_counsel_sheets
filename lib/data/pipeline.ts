@@ -44,7 +44,7 @@ const STAGES: Record<string, StageInfo[]> = {
   ],
 }
 
-const CENTER_EXCLUDE = new Set(["본사 성장팀"])
+const CENTER_EXCLUDE = new Set(["본사 성장팀", "수도권1본부 (기타)"])
 
 function parseCenter(raw: string | null): string | null {
   if (!raw) return null
