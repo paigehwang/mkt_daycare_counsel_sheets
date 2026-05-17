@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주간보호 상담 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root {
+    --bg: #fafaf9;
+    --bg-card: #ffffff;
+    --bg-deep: #f4f3f1;
+    --ink: #1d1d1d;
+    --ink-soft: #4a4a4a;
+    --ink-faded: #8e8e8e;
+    --rule: #e6e4e0;
+    --rule-strong: #d4d2cd;
+    --primary: #ef6079;
+    --primary-soft: #fce4ea;
+    --primary-deep: #d04864;
+    --neutral-dark: #2a2a2a;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 0 rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'tnum' on;
+    letter-spacing: -0.01em;
+}
+.tnum { font-feature-settings: 'tnum' on; }
+
+.page { max-width: 1400px; margin: 0 auto; padding: 40px 40px 96px; }
+
+/* Masthead */
+.masthead {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 2px solid var(--ink); padding-bottom: 20px; margin-bottom: 24px;
+}
+.masthead-left .eyebrow {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 6px; font-weight: 700;
+}
+.masthead-left h1 {
+    font-weight: 800; font-size: 40px; letter-spacing: -0.035em;
+    line-height: 1.05; color: var(--ink);
+}
+.masthead-left h1 .accent { color: var(--primary); }
+.masthead-right { text-align: right; font-size: 12px; color: var(--ink-soft); }
+.masthead-right .date {
+    font-size: 16px; color: var(--ink); margin-bottom: 4px;
+    font-weight: 700; letter-spacing: -0.02em;
+}
+
+/* === Notice box === */
+.notice-box {
+    background: #fff8f5;
+    border: 1px solid #f5d4c8;
+    border-left: 3px solid var(--primary);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
+}
+.notice-icon {
+    width: 28px; height: 28px;
+    background: var(--primary); color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-style: italic;
+    font-size: 14px; font-family: Georgia, serif;
+    flex-shrink: 0;
+}
+.notice-body { flex: 1; min-width: 240px; }
+.notice-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+    margin-bottom: 2px;
+}
+.notice-desc {
+    font-size: 12px; color: var(--ink-soft);
+    font-weight: 500; line-height: 1.55;
+}
+.notice-desc strong { color: var(--ink); font-weight: 700; }
+.notice-btn {
+    background: var(--ink); color: white;
+    border: none; border-radius: 8px;
+    padding: 10px 16px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.notice-btn:hover {
+    background: var(--primary);
+    transform: translateY(-1px);
+}
+.notice-btn-arrow {
+    font-size: 14px; line-height: 1;
+}
+
+/* === Date section: PRIMARY === */
+.date-section {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+.date-section .ds-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 16px;
+}
+.date-section .ds-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+    display: flex; align-items: center; gap: 8px;
+}
+.date-section .ds-title .ds-bullet {
+    width: 6px; height: 6px;
+    background: var(--primary); border-radius: 50%;
+}
+.date-section .ds-summary {
+    font-size: 12px; color: var(--ink-faded); font-weight: 500;
+}
+.date-section .ds-summary strong {
+    color: var(--ink); font-weight: 700;
+    font-feature-settings: 'tnum' on;
+}
+
+.ds-body {
+    display: flex; gap: 16px; align-items: stretch;
+    flex-wrap: wrap;
+}
+.preset-btns-primary {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    flex: 1;
+}
+.preset-btn {
+    background: var(--bg);
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-soft);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+}
+.preset-btn:hover { border-color: var(--primary); color: var(--primary); }
+.preset-btn.active {
+    background: var(--ink); color: white; border-color: var(--ink);
+}
+.custom-date-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-soft);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+}
+.custom-date-toggle:hover { border-color: var(--primary); color: var(--primary); }
+.custom-date-toggle.active {
+    background: var(--primary); color: white; border-color: var(--primary);
+}
+.custom-date-toggle .icon {
+    width: 14px; height: 14px;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Crect x='2' y='3' width='10' height='9' rx='1' stroke='%234a4a4a' stroke-width='1.3'/%3E%3Cpath d='M2 6h10M5 2v2M9 2v2' stroke='%234a4a4a' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: center;
+}
+.custom-date-toggle.active .icon {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Crect x='2' y='3' width='10' height='9' rx='1' stroke='white' stroke-width='1.3'/%3E%3Cpath d='M2 6h10M5 2v2M9 2v2' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.custom-range-row {
+    display: none;
+    margin-top: 14px; padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    align-items: end; gap: 12px; flex-wrap: wrap;
+}
+.custom-range-row.show { display: flex; }
+.custom-range-row .label {
+    display: block; font-size: 11px;
+    color: var(--ink-faded); font-weight: 600;
+    margin-bottom: 6px; letter-spacing: 0.02em;
+}
+.date-input {
+    padding: 10px 14px;
+    border: 1px solid var(--rule-strong);
+    border-radius: 8px;
+    background: var(--bg);
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--ink); cursor: pointer;
+    width: 170px; color-scheme: light;
+}
+.date-input:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.date-arrow { color: var(--ink-faded); font-weight: 600; padding: 0 4px; line-height: 40px; }
+
+/* === Bonbu buttons === */
+.bonbu-section {
+    margin-bottom: 28px;
+}
+.bonbu-section-label {
+    font-size: 12px; font-weight: 700;
+    color: var(--ink); margin-bottom: 12px;
+    letter-spacing: -0.01em; display: flex;
+    align-items: center; gap: 8px;
+}
+.bonbu-section-label .ds-bullet {
+    width: 6px; height: 6px;
+    background: var(--primary); border-radius: 50%;
+}
+.bonbu-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+}
+@media (max-width: 900px) { .bonbu-grid { grid-template-columns: 1fr 1fr; } }
+
+.bonbu-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+}
+.bonbu-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(239, 96, 121, 0.1);
+}
+.bonbu-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 18px rgba(239, 96, 121, 0.22);
+}
+.bonbu-btn.active.all {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.16);
+}
+.bonbu-btn .bb-tag {
+    font-size: 10px; letter-spacing: 0.12em;
+    color: var(--ink-faded); font-weight: 700;
+    text-transform: uppercase;
+}
+.bonbu-btn.active .bb-tag { color: rgba(255,255,255,0.7); }
+.bonbu-btn .bb-name {
+    font-size: 18px; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.1;
+    color: var(--ink); margin: 4px 0 8px;
+}
+.bonbu-btn.active .bb-name { color: white; }
+.bonbu-btn .bb-meta {
+    font-size: 11px;
+    color: var(--ink-faded); font-weight: 500;
+}
+.bonbu-btn.active .bb-meta { color: rgba(255,255,255,0.85); }
+.bonbu-btn .bb-meta strong { color: var(--ink); font-weight: 700; }
+.bonbu-btn.active .bb-meta strong { color: white; }
+
+/* Section header */
+.section-h {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 32px 0 16px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--rule-strong);
+}
+.section-h h2 {
+    font-weight: 700; font-size: 22px; letter-spacing: -0.025em;
+    color: var(--ink); display: flex; align-items: center; gap: 10px;
+}
+.section-h h2::before {
+    content: ''; width: 4px; height: 18px;
+    background: var(--primary); border-radius: 2px;
+}
+.section-h .meta { font-size: 12px; color: var(--ink-faded); font-weight: 500; }
+
+/* Center controls */
+.center-controls {
+    display: flex; gap: 16px; align-items: end; margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.center-controls .filter-group { flex: 1; min-width: 240px; }
+.filter-group label {
+    display: block; font-size: 11px;
+    color: var(--ink-faded); font-weight: 600;
+    margin-bottom: 6px; letter-spacing: 0.02em;
+}
+.filter-group select {
+    width: 100%; padding: 11px 36px 11px 14px;
+    border: 1px solid var(--rule-strong); border-radius: 8px;
+    background: var(--bg-card);
+    font-family: inherit; font-size: 15px; font-weight: 500; color: var(--ink);
+    cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%231d1d1d' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+}
+.filter-group select:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* Center chips */
+.center-chips {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+.center-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+}
+.center-chip:hover { border-color: var(--primary); color: var(--primary); }
+.center-chip.active {
+    background: var(--primary); color: white;
+    border-color: var(--primary); font-weight: 600;
+}
+
+/* Collapsible section toggle */
+.collapsible-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 14px 18px;
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    font-family: inherit;
+    width: 100%;
+    margin-bottom: 0;
+    box-shadow: var(--shadow-sm);
+}
+.collapsible-toggle:hover { border-color: var(--primary); }
+.collapsible-toggle.open { border-radius: 8px 8px 0 0; border-bottom: none; }
+.collapsible-toggle .ct-left {
+    display: flex; align-items: center; gap: 12px;
+}
+.collapsible-toggle .ct-icon {
+    width: 28px; height: 28px;
+    background: var(--bg-deep); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--ink-soft);
+}
+.collapsible-toggle.open .ct-icon { background: var(--primary); color: white; }
+.collapsible-toggle .ct-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+}
+.collapsible-toggle .ct-meta {
+    font-size: 12px; color: var(--ink-faded); font-weight: 500;
+}
+.collapsible-toggle .ct-chevron {
+    font-size: 16px; color: var(--ink-faded);
+    transition: transform 0.2s;
+}
+.collapsible-toggle.open .ct-chevron { transform: rotate(180deg); color: var(--primary); }
+.collapsible-content {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: var(--shadow-sm);
+}
+.collapsible-content.open { display: block; }
+
+/* Monthly trend table */
+.monthly-table-wrap {
+    overflow-x: auto;
+    border-radius: 0 0 8px 8px;
+}
+table.monthly { width: 100%; border-collapse: collapse; }
+table.monthly th, table.monthly td {
+    padding: 13px 16px; text-align: right; font-size: 14px;
+    border-bottom: 1px solid var(--rule);
+    font-feature-settings: 'tnum' on;
+}
+table.monthly th:first-child, table.monthly td:first-child {
+    text-align: left; font-weight: 600;
+    border-right: 1px solid var(--rule);
+    background: var(--bg-deep); position: sticky; left: 0; z-index: 1;
+}
+table.monthly thead th {
+    font-size: 12px; color: var(--ink-soft); font-weight: 600;
+    background: var(--bg-deep); border-bottom: 2px solid var(--ink);
+    padding: 12px 16px;
+}
+table.monthly thead th .month-year {
+    font-size: 15px; color: var(--ink); font-weight: 700;
+    display: block; margin-bottom: 2px; letter-spacing: -0.02em;
+}
+table.monthly tbody tr { transition: background 0.1s; }
+table.monthly tbody tr:hover td { background: #fdf6f8; }
+table.monthly tbody tr:hover td:first-child { background: var(--primary-soft); }
+.cell-zero { color: var(--ink-faded); }
+.cell-strong { font-weight: 700; }
+table.monthly tfoot td {
+    font-weight: 700; border-top: 2px solid var(--ink);
+    border-bottom: none; background: var(--bg-deep);
+}
+
+/* Center detail */
+.center-detail {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 28px 30px;
+    box-shadow: var(--shadow-sm);
+}
+.cd-empty {
+    color: var(--ink-faded); font-size: 14px;
+    text-align: center; padding: 48px 0;
+    background: var(--bg-card);
+    border: 1px dashed var(--rule-strong);
+    border-radius: 10px;
+}
+.cd-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 22px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+}
+.cd-title h3 {
+    font-size: 26px; font-weight: 800; letter-spacing: -0.03em;
+    color: var(--ink); margin-bottom: 6px;
+}
+.cd-title .cd-tag {
+    display: inline-block;
+    font-size: 11px; color: var(--primary);
+    background: var(--primary-soft); padding: 3px 10px;
+    border-radius: 4px; font-weight: 600;
+}
+.cd-period {
+    text-align: right; font-size: 12px;
+    color: var(--ink-faded); font-weight: 500;
+}
+.cd-period .v {
+    font-size: 14px; color: var(--ink); font-weight: 600;
+    margin-top: 2px; font-feature-settings: 'tnum' on;
+}
+
+.cd-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-bottom: 28px;
+}
+.cd-stat-card {
+    background: var(--bg-deep); border-radius: 6px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 2px solid transparent;
+    text-align: left;
+    font-family: inherit;
+}
+.cd-stat-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.cd-stat-card.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary-deep);
+    box-shadow: 0 4px 16px rgba(239, 96, 121, 0.25);
+}
+.cd-stat-card .l {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-soft); margin-bottom: 4px;
+}
+.cd-stat-card.active .l { color: rgba(255,255,255,0.85); }
+.cd-stat-card .v {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1;
+    color: var(--ink); font-feature-settings: 'tnum' on;
+}
+.cd-stat-card.active .v { color: white; }
+.cd-stat-card .sub {
+    font-size: 11px; color: var(--ink-faded);
+    margin-top: 4px; font-weight: 500;
+}
+.cd-stat-card.active .sub { color: rgba(255,255,255,0.85); }
+.cd-stat-card .click-hint {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--primary);
+    background: var(--primary-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+.cd-stat-card.active .click-hint {
+    background: rgba(255,255,255,0.25); color: white;
+}
+.cd-stat-card.active .click-hint::before { content: '✓ '; }
+
+.cd-chart { margin-bottom: 28px; }
+.cd-chart-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--ink-faded); margin-bottom: 10px;
+}
+.cd-bars {
+    display: flex; align-items: flex-end;
+    gap: 4px; min-height: 120px;
+    padding: 12px 8px 0;
+    border-bottom: 1px solid var(--rule);
+}
+.cd-bar-wrap {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 6px; min-width: 0;
+}
+.cd-bar-stack {
+    width: 100%; max-width: 36px;
+    display: flex; flex-direction: column-reverse;
+    border-radius: 3px 3px 0 0;
+    overflow: hidden;
+    transition: opacity 0.15s;
+    min-height: 2px;
+}
+.cd-bar-stack:hover { opacity: 0.85; }
+.cd-bar-seg { width: 100%; }
+.cd-bar-seg.grade { background: var(--primary); }
+.cd-bar-seg.phone { background: var(--primary-deep); }
+.cd-bar-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-faded); margin-top: 4px;
+    white-space: nowrap;
+}
+.cd-bar-num {
+    font-size: 12px; font-weight: 700;
+    color: var(--ink); font-feature-settings: 'tnum' on;
+}
+
+.cd-detail-grid {
+    display: grid; grid-template-columns: 1fr 2fr;
+    gap: 28px;
+}
+@media (max-width: 900px) { .cd-detail-grid { grid-template-columns: 1fr; } }
+
+.cd-channels {
+    background: var(--bg-deep); border-radius: 6px;
+    padding: 20px;
+}
+.cd-channels-bar {
+    display: flex; height: 28px;
+    border-radius: 4px; overflow: hidden;
+    margin: 12px 0 14px;
+}
+.cd-channels-bar .seg { height: 100%; transition: opacity 0.15s; }
+.cd-channels-bar .seg:hover { opacity: 0.8; }
+.cd-channels-list .row {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 7px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+}
+.cd-channels-list .row:last-child { border-bottom: none; }
+.cd-channels-list .nm { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.cd-channels-list .swatch { width: 8px; height: 8px; border-radius: 2px; }
+.cd-channels-list .pct {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: -0.02em; font-feature-settings: 'tnum' on;
+}
+.cd-channels-list .cnt {
+    color: var(--ink-faded); font-size: 11px; font-weight: 500;
+    margin-left: 4px;
+}
+
+.cd-raw {
+    border: 1px solid var(--rule); border-radius: 6px;
+    overflow: hidden;
+}
+.cd-raw-header {
+    background: var(--bg-deep); padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.cd-raw-header .l { font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+.cd-raw-header .meta { font-size: 11px; color: var(--ink-faded); font-weight: 500; }
+.cd-raw-table-wrap { max-height: 480px; overflow-y: auto; }
+.cd-raw-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cd-raw-table thead {
+    position: sticky; top: 0; background: var(--bg-card); z-index: 1;
+}
+.cd-raw-table th {
+    padding: 10px 14px; text-align: left;
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-soft); letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--rule);
+}
+.cd-raw-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--rule);
+    font-feature-settings: 'tnum' on;
+}
+.cd-raw-table tr:last-child td { border-bottom: none; }
+.cd-raw-table tr:hover td { background: var(--bg-deep); }
+.cd-raw-table .pill { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 3px; }
+.cd-raw-table .pill.grade { background: var(--primary-soft); color: var(--primary-deep); }
+.cd-raw-table .pill.phone { background: var(--ink); color: white; }
+.cd-raw-table .pill.inperson { background: #e8eef0; color: #2a4d5c; }
+.cd-raw-table .pill.contract { background: #f0e8d8; color: #6b5024; }
+.cd-raw-table .pill.req { background: var(--bg-deep); color: var(--ink-faded); }
+.cd-raw-table .ch-cell { display: inline-flex; align-items: center; gap: 6px; }
+.cd-raw-table .ch-cell .swatch { width: 6px; height: 6px; border-radius: 50%; }
+.cd-raw-empty {
+    padding: 32px; text-align: center;
+    color: var(--ink-faded); font-size: 13px;
+}
+
+footer.colophon {
+    margin-top: 64px; padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px; color: var(--ink-faded);
+    text-align: center; line-height: 1.7;
+}
+
+@media (max-width: 800px) {
+    .page { padding: 24px 16px; }
+    .masthead { flex-direction: column; align-items: flex-start; gap: 18px; }
+    .masthead-left h1 { font-size: 28px; }
+    .cd-stats { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="masthead">
+    <div class="masthead-left">
+        <div class="eyebrow">CARING · MARKETING OPERATIONS</div>
+        <h1>주간보호 상담 <span class="accent">대시보드</span></h1>
+    </div>
+    <div class="masthead-right">
+        <div class="date" id="dateRange">기간 미설정</div>
+        <div>4개 본부 · <span id="totalCenters">-</span>개 센터 통합</div>
+    </div>
+</div>
+
+<!-- Notice: data scope -->
+<div class="notice-box">
+    <div class="notice-icon">i</div>
+    <div class="notice-body">
+        <div class="notice-title">상담시트 기준 데이터입니다</div>
+        <div class="notice-desc">센터장님이 기록해주신 상담시트 기준으로 집계되어 있어 신규콜 전체 값과는 차이가 있을 수 있습니다. 신규콜 전체 현황은 <strong>전사 콜 유입 현황 시트</strong>에서 확인해주세요.</div>
+    </div>
+    <a class="notice-btn" href="https://docs.google.com/spreadsheets/d/1bmsMlWp6SXJAgo2j2yDN_yM7rq6q-2OGRJp4-4hj6BQ/edit?gid=175380730#gid=175380730" target="_blank" rel="noopener">
+        전사 콜 유입 현황
+        <span class="notice-btn-arrow">↗</span>
+    </a>
+</div>
+
+<!-- 1. Date section (PRIMARY, top) -->
+<div class="date-section">
+    <div class="ds-header">
+        <div class="ds-title">
+            <span class="ds-bullet"></span>
+            조회 기간
+        </div>
+        <div class="ds-summary" id="dateSummary">전체 기간</div>
+    </div>
+    <div class="ds-body">
+        <div class="preset-btns-primary">
+            <button class="preset-btn" data-preset="today">오늘</button>
+            <button class="preset-btn active" data-preset="7d">최근 7일</button>
+            <button class="preset-btn" data-preset="30d">최근 30일</button>
+            <button class="preset-btn" data-preset="90d">최근 90일</button>
+            <button class="preset-btn" data-preset="thismonth">이번 달</button>
+            <button class="preset-btn" data-preset="lastmonth">지난 달</button>
+            <button class="preset-btn" data-preset="ytd">올해</button>
+            <button class="preset-btn" data-preset="all">전체</button>
+        </div>
+        <button class="custom-date-toggle" id="customDateToggle">
+            <span class="icon"></span>
+            직접 선택
+        </button>
+    </div>
+    <div class="custom-range-row" id="customRangeRow">
+        <div>
+            <span class="label">시작일</span>
+            <input type="date" class="date-input" id="dateFrom">
+        </div>
+        <span class="date-arrow">→</span>
+        <div>
+            <span class="label">종료일</span>
+            <input type="date" class="date-input" id="dateTo">
+        </div>
+    </div>
+</div>
+
+<!-- 2. Bonbu buttons -->
+<div class="bonbu-section">
+    <div class="bonbu-section-label">
+        <span class="ds-bullet"></span>
+        본부 선택
+    </div>
+    <div class="bonbu-grid" id="bonbuGrid"></div>
+</div>
+
+<!-- 3. Center section (main) -->
+<div id="centerSection">
+    <div class="section-h">
+        <h2>센터별 상세</h2>
+        <div class="meta" id="centerMeta">센터를 선택하세요</div>
+    </div>
+    <div class="center-controls">
+        <div class="filter-group">
+            <label>센터 선택</label>
+            <select id="centerSelect"><option value="">센터를 선택하세요</option></select>
+        </div>
+    </div>
+    <div class="center-chips" id="centerChips"></div>
+    <div id="centerDetailHost">
+        <div class="cd-empty">위에서 센터를 선택하면 상세 뷰가 나타납니다.</div>
+    </div>
+</div>
+
+<!-- 4. Monthly trend (collapsible, secondary) -->
+<div style="margin-top: 32px;">
+    <button class="collapsible-toggle" id="monthlyToggle">
+        <div class="ct-left">
+            <div class="ct-icon" id="monthlyIcon">+</div>
+            <div>
+                <div class="ct-title">본부 월별 추이 보기</div>
+                <div class="ct-meta" id="monthlyToggleMeta">선택 기간 내 월별 집계</div>
+            </div>
+        </div>
+        <div class="ct-chevron">▾</div>
+    </button>
+    <div class="collapsible-content" id="monthlyContent">
+        <div class="monthly-table-wrap"><table class="monthly" id="monthlyTable"></table></div>
+    </div>
+</div>
+
+<footer class="colophon">
+    Source · Google Sheets (영남·충청·호남·수도권1 본부 상담시트) · 자동 집계<br>
+    등급+유선상담은 첫 인입 단계 · 대면상담·계약상담은 후속 단계 지표
+</footer>
+</div>
+
+<script>
+const DATA = __DATA_JSON_PLACEHOLDER__;
+const SHEETS = ['등급신청','유선상담','대면상담','계약상담','상담요청'];
+const PHONE_SHEETS = ['등급신청','유선상담'];
+const CHANNEL_COLORS = {
+    '인터넷': '#ef6079', '지인소개': '#f08fa1', '송영차량': '#3a3a3a',
+    '간판': '#6b6b6b', '현수막': '#8a8a8a', '전단지': '#a8a8a8',
+    '케어마스터': '#4d6b8a', '고객컨택팀': '#7a8595', '기타': '#c0c0c0',
+};
+const SHEET_PILL = {
+    '등급신청': 'grade', '유선상담': 'phone',
+    '대면상담': 'inperson', '계약상담': 'contract', '상담요청': 'req'
+};
+
+const ALL_DATES = (DATA.detail || []).map(r => r.d).filter(Boolean).sort();
+const MIN_DATE = ALL_DATES.length ? ALL_DATES[0] : DATA.months[0] + '-01';
+const MAX_DATE = ALL_DATES.length ? ALL_DATES[ALL_DATES.length - 1] : DATA.months[DATA.months.length-1] + '-31';
+
+// === today-relative defaults ===
+function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function daysAgo(n) {
+    const d = new Date();
+    d.setDate(d.getDate() - n + 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function startOfMonth(yearMonth) { return yearMonth + '-01'; }
+function endOfMonth(yearMonth) {
+    const [y, m] = yearMonth.split('-').map(Number);
+    const last = new Date(y, m, 0).getDate();
+    return yearMonth + '-' + String(last).padStart(2,'0');
+}
+
+// boot defaults: last 7 days from today
+let activeBonbu = ''; // default: 전체 본부
+let dateFrom = daysAgo(7);
+let dateTo = todayStr();
+let selectedCenter = '';
+let monthlyOpen = false;
+let selectedView = 'phone'; // 'phone' | 'inperson' | 'contract' | 'total'
+
+function fmt(n) { return n.toLocaleString('ko-KR'); }
+
+function inDateRange(d) { return d >= dateFrom && d <= dateTo; }
+function monthFromDate(d) { return d.slice(0, 7); }
+
+function* iterDetail(opts = {}) {
+    const filterBonbu = opts.bonbu !== undefined ? opts.bonbu : activeBonbu;
+    const filterCenter = opts.center;
+    for (const r of DATA.detail || []) {
+        if (filterBonbu && r.b !== filterBonbu) continue;
+        if (filterCenter && r.c !== filterCenter) continue;
+        if (!inDateRange(r.d)) continue;
+        yield r;
+    }
+}
+function getStats(opts = {}) {
+    let total = 0, phone = 0, grade = 0, phoneCall = 0, inperson = 0, contract = 0;
+    const centerSet = new Set();
+    for (const r of iterDetail(opts)) {
+        total += 1;
+        centerSet.add(r.b + '|' + r.c);
+        if (PHONE_SHEETS.includes(r.s)) phone += 1;
+        if (r.s === '등급신청') grade += 1;
+        if (r.s === '유선상담') phoneCall += 1;
+        if (r.s === '대면상담') inperson += 1;
+        if (r.s === '계약상담') contract += 1;
+    }
+    return { total, phone, grade, phoneCall, inperson, contract, centers: centerSet.size };
+}
+
+// === Date controls ===
+function initDateInputs() {
+    const f = document.getElementById('dateFrom');
+    const t = document.getElementById('dateTo');
+    f.min = MIN_DATE; f.max = MAX_DATE; f.value = dateFrom;
+    t.min = MIN_DATE; t.max = MAX_DATE; t.value = dateTo;
+    f.addEventListener('change', e => {
+        dateFrom = e.target.value;
+        if (dateFrom > dateTo) dateTo = dateFrom;
+        document.getElementById('dateTo').value = dateTo;
+        clearPreset();
+        renderAll();
+    });
+    t.addEventListener('change', e => {
+        dateTo = e.target.value;
+        if (dateTo < dateFrom) dateFrom = dateTo;
+        document.getElementById('dateFrom').value = dateFrom;
+        clearPreset();
+        renderAll();
+    });
+    document.querySelectorAll('.preset-btn').forEach(b => {
+        b.addEventListener('click', () => applyPreset(b.dataset.preset));
+    });
+    document.getElementById('customDateToggle').addEventListener('click', () => {
+        const r = document.getElementById('customRangeRow');
+        const t = document.getElementById('customDateToggle');
+        r.classList.toggle('show');
+        t.classList.toggle('active');
+    });
+}
+function clearPreset() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+}
+function applyPreset(p) {
+    clearPreset();
+    document.querySelector(`.preset-btn[data-preset="${p}"]`).classList.add('active');
+    const today = todayStr();
+    if (p === 'today') {
+        dateFrom = today; dateTo = today;
+    } else if (p === '7d') {
+        dateFrom = daysAgo(7); dateTo = today;
+    } else if (p === '30d') {
+        dateFrom = daysAgo(30); dateTo = today;
+    } else if (p === '90d') {
+        dateFrom = daysAgo(90); dateTo = today;
+    } else if (p === 'thismonth') {
+        const ym = today.slice(0,7);
+        dateFrom = startOfMonth(ym); dateTo = today;
+    } else if (p === 'lastmonth') {
+        const d = new Date();
+        d.setMonth(d.getMonth() - 1);
+        const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+        dateFrom = startOfMonth(ym); dateTo = endOfMonth(ym);
+    } else if (p === 'ytd') {
+        const yr = today.split('-')[0];
+        dateFrom = yr + '-01-01'; dateTo = today;
+    } else if (p === 'all') {
+        dateFrom = MIN_DATE; dateTo = MAX_DATE;
+    }
+    document.getElementById('dateFrom').value = dateFrom;
+    document.getElementById('dateTo').value = dateTo;
+    renderAll();
+}
+
+// === Bonbu buttons ===
+function renderBonbuButtons() {
+    const host = document.getElementById('bonbuGrid');
+    const bonbus = Object.keys(DATA.centers_by_bonbu).sort();
+    const allStats = getStats({bonbu: ''});
+    const bonbuStats = bonbus.map(b => [b, getStats({bonbu: b})]);
+
+    let html = `<button class="bonbu-btn all ${activeBonbu === '' ? 'active' : ''}" data-bonbu="">
+        <div class="bb-tag">ALL</div>
+        <div class="bb-name">전체 본부</div>
+        <div class="bb-meta"><strong>${fmt(allStats.centers)}</strong> 센터 · <strong>${fmt(allStats.phone)}</strong> 신규</div>
+    </button>`;
+    bonbus.forEach(b => {
+        const s = bonbuStats.find(x => x[0] === b)[1];
+        html += `<button class="bonbu-btn ${activeBonbu === b ? 'active' : ''}" data-bonbu="${b}">
+            <div class="bb-tag">${b}본부</div>
+            <div class="bb-name">${b}</div>
+            <div class="bb-meta"><strong>${s.centers}</strong> 센터 · <strong>${fmt(s.phone)}</strong> 신규</div>
+        </button>`;
+    });
+    host.innerHTML = html;
+    host.querySelectorAll('.bonbu-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newBonbu = btn.dataset.bonbu;
+            if (newBonbu !== activeBonbu) {
+                selectedCenter = ''; // reset center when switching bonbu
+            }
+            activeBonbu = newBonbu;
+            renderAll();
+        });
+    });
+
+    let allCenters = 0;
+    Object.values(DATA.centers_by_bonbu).forEach(arr => allCenters += arr.length);
+    document.getElementById('totalCenters').textContent = allCenters;
+}
+
+// === Date summary text ===
+function updateDateSummary() {
+    document.getElementById('dateRange').textContent = dateFrom + ' → ' + dateTo;
+    // friendly summary
+    const stats = getStats();
+    document.getElementById('dateSummary').innerHTML =
+        `<strong>${dateFrom}</strong> → <strong>${dateTo}</strong> · 등급+유선 <strong>${fmt(stats.phone)}</strong>건`;
+}
+
+// === Monthly table (collapsible) ===
+function renderMonthlyTable() {
+    const monthAgg = {};
+    for (const r of iterDetail()) {
+        const m = monthFromDate(r.d);
+        if (!monthAgg[m]) monthAgg[m] = { phone: 0, grade: 0, phoneCall: 0, in: 0, ct: 0, req: 0, tot: 0 };
+        const o = monthAgg[m];
+        if (PHONE_SHEETS.includes(r.s)) o.phone += 1;
+        if (r.s === '등급신청') o.grade += 1;
+        if (r.s === '유선상담') o.phoneCall += 1;
+        if (r.s === '대면상담') o.in += 1;
+        if (r.s === '계약상담') o.ct += 1;
+        if (r.s === '상담요청') o.req += 1;
+        o.tot += 1;
+    }
+    const months = Object.keys(monthAgg).sort();
+    const t = document.getElementById('monthlyTable');
+    if (!months.length) {
+        t.innerHTML = '<thead><tr><th>구분</th></tr></thead><tbody><tr><td style="text-align:center;color:var(--ink-faded);padding:32px">선택한 기간에 해당하는 데이터가 없습니다</td></tr></tbody>';
+        document.getElementById('monthlyToggleMeta').textContent = '데이터 없음';
+        return;
+    }
+    let h = '<thead><tr><th>구분</th>';
+    months.forEach(m => {
+        const [y, mn] = m.split('-');
+        h += `<th><span class="month-year">${parseInt(mn)}월</span><span style="font-size:11px;color:var(--ink-faded);font-weight:500">${y.slice(2)}년</span></th>`;
+    });
+    h += '<th><span class="month-year">합계</span></th></tr></thead>';
+    const rows = [
+        { label: '등급+유선상담', key: 'phone', color: 'var(--primary)' },
+        { label: '└ 등급신청', key: 'grade', color: 'var(--primary-soft)', sub: true },
+        { label: '└ 유선상담', key: 'phoneCall', color: 'var(--primary-deep)', sub: true },
+        { label: '대면상담', key: 'in', color: 'var(--neutral-dark)' },
+        { label: '계약상담', key: 'ct', color: 'var(--ink-soft)' },
+        { label: '상담요청', key: 'req', color: 'var(--ink-faded)' },
+    ];
+    h += '<tbody>';
+    rows.forEach(r => {
+        const labelStyle = r.sub ? 'color:var(--ink-soft);font-weight:500;padding-left:16px' : '';
+        h += `<tr><td style="${labelStyle}"><span style="display:inline-block;width:8px;height:8px;background:${r.color};margin-right:8px;vertical-align:middle;border-radius:2px"></span>${r.label}</td>`;
+        let sum = 0;
+        months.forEach(m => {
+            const v = monthAgg[m][r.key];
+            sum += v;
+            const cls = (v === 0 ? 'cell-zero' : (r.key === 'phone' ? 'cell-strong' : ''));
+            h += `<td class="${cls}" style="${r.sub ? 'color:var(--ink-soft);font-weight:500' : ''}">${v === 0 ? '–' : fmt(v)}</td>`;
+        });
+        h += `<td class="cell-strong" style="${r.sub ? 'color:var(--ink-soft);font-weight:600' : ''}">${fmt(sum)}</td></tr>`;
+    });
+    h += '</tbody>';
+    h += '<tfoot><tr><td>월별 합계</td>';
+    let grand = 0;
+    months.forEach(m => { h += `<td>${fmt(monthAgg[m].tot)}</td>`; grand += monthAgg[m].tot; });
+    h += `<td>${fmt(grand)}</td></tr></tfoot>`;
+    t.innerHTML = h;
+    document.getElementById('monthlyToggleMeta').textContent =
+        `${months.length}개월 · ${activeBonbu === '' ? '전체 본부' : activeBonbu + '본부'} · ${fmt(grand)}건`;
+}
+
+function initMonthlyToggle() {
+    const btn = document.getElementById('monthlyToggle');
+    btn.addEventListener('click', () => {
+        monthlyOpen = !monthlyOpen;
+        btn.classList.toggle('open', monthlyOpen);
+        document.getElementById('monthlyContent').classList.toggle('open', monthlyOpen);
+        document.getElementById('monthlyIcon').textContent = monthlyOpen ? '−' : '+';
+    });
+}
+
+// === Center section ===
+function renderCenterControls() {
+    const sel = document.getElementById('centerSelect');
+    sel.innerHTML = '<option value="">센터를 선택하세요</option>';
+    let centers = [];
+    if (activeBonbu) centers = (DATA.centers_by_bonbu[activeBonbu] || []).slice();
+    else Object.values(DATA.centers_by_bonbu).forEach(arr => centers.push(...arr));
+    centers.sort();
+    centers.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        sel.appendChild(o);
+    });
+    if (selectedCenter && centers.includes(selectedCenter)) sel.value = selectedCenter;
+    else selectedCenter = '';
+    sel.onchange = e => {
+        selectedCenter = e.target.value;
+        updateChipState();
+        renderCenterDetail();
+    };
+
+    const chipsHost = document.getElementById('centerChips');
+    chipsHost.innerHTML = centers.map(c =>
+        `<button class="center-chip ${selectedCenter === c ? 'active' : ''}" data-center="${c}">${c}</button>`
+    ).join('');
+    chipsHost.querySelectorAll('.center-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            selectedCenter = chip.dataset.center;
+            sel.value = selectedCenter;
+            updateChipState();
+            renderCenterDetail();
+        });
+    });
+}
+function updateChipState() {
+    document.querySelectorAll('.center-chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.center === selectedCenter);
+    });
+}
+function findCenterBonbu(center) {
+    for (const b in DATA.centers_by_bonbu) {
+        if (DATA.centers_by_bonbu[b].includes(center)) return b;
+    }
+    return '';
+}
+function renderCenterDetail() {
+    const host = document.getElementById('centerDetailHost');
+    if (!selectedCenter) {
+        host.innerHTML = '<div class="cd-empty">위에서 센터를 선택하면 상세 뷰가 나타납니다.</div>';
+        document.getElementById('centerMeta').textContent = '센터를 선택하세요';
+        return;
+    }
+    const center = selectedCenter;
+    const bonbu = findCenterBonbu(center);
+
+    // === 1) Compute aggregate stats for all 4 cards (always) ===
+    const stats = { phone: 0, grade: 0, phoneCall: 0, inperson: 0, contract: 0, total: 0 };
+    const allRows = [];
+    for (const r of iterDetail({bonbu: bonbu, center: center})) {
+        stats.total += 1;
+        allRows.push(r);
+        if (PHONE_SHEETS.includes(r.s)) {
+            stats.phone += 1;
+            if (r.s === '등급신청') stats.grade += 1;
+            if (r.s === '유선상담') stats.phoneCall += 1;
+        }
+        if (r.s === '대면상담') stats.inperson += 1;
+        if (r.s === '계약상담') stats.contract += 1;
+    }
+
+    // === 2) View config based on selectedView ===
+    const VIEWS = {
+        phone: {
+            label: '등급+유선상담 (신규 인입)',
+            chartLabel: '월별 신규 인입 (등급+유선)',
+            channelLabel: '유입경로 비중 (등급+유선)',
+            rawLabel: '신규 상담 행 단위 데이터',
+            rawSubLabel: '등급+유선만 표시',
+            emptyMsg: '선택한 기간 동안 신규 인입(등급+유선)이 없습니다.',
+            filter: r => PHONE_SHEETS.includes(r.s),
+            stack: r => r.s === '등급신청' ? 'grade' : 'phone',
+            stackLegend: [
+                { key: 'grade', label: '등급신청', color: 'var(--primary)' },
+                { key: 'phone', label: '유선상담', color: 'var(--primary-deep)' },
+            ],
+        },
+        inperson: {
+            label: '대면상담',
+            chartLabel: '월별 대면상담',
+            channelLabel: '유입경로 비중 (대면상담)',
+            rawLabel: '대면상담 행 단위 데이터',
+            rawSubLabel: '대면상담만 표시',
+            emptyMsg: '선택한 기간 동안 대면상담이 없습니다.',
+            filter: r => r.s === '대면상담',
+            stack: r => 'main',
+            stackLegend: [
+                { key: 'main', label: '대면상담', color: 'var(--ink)' },
+            ],
+        },
+        contract: {
+            label: '계약상담',
+            chartLabel: '월별 계약상담',
+            channelLabel: '유입경로 비중 (계약상담)',
+            rawLabel: '계약상담 행 단위 데이터',
+            rawSubLabel: '계약상담만 표시',
+            emptyMsg: '선택한 기간 동안 계약상담이 없습니다.',
+            filter: r => r.s === '계약상담',
+            stack: r => 'main',
+            stackLegend: [
+                { key: 'main', label: '계약상담', color: 'var(--ink-soft)' },
+            ],
+        },
+        total: {
+            label: '전체 상담',
+            chartLabel: '월별 전체 상담 (시트별 누적)',
+            channelLabel: '유입경로 비중 (전체)',
+            rawLabel: '전체 상담 행 단위 데이터',
+            rawSubLabel: '모든 시트 표시',
+            emptyMsg: '선택한 기간 동안 상담이 없습니다.',
+            filter: r => true,
+            stack: r => {
+                if (r.s === '등급신청') return 'grade';
+                if (r.s === '유선상담') return 'phone';
+                if (r.s === '대면상담') return 'inperson';
+                if (r.s === '계약상담') return 'contract';
+                return 'req';
+            },
+            stackLegend: [
+                { key: 'grade', label: '등급신청', color: 'var(--primary)' },
+                { key: 'phone', label: '유선상담', color: 'var(--primary-deep)' },
+                { key: 'inperson', label: '대면상담', color: '#2a4d5c' },
+                { key: 'contract', label: '계약상담', color: '#a8865a' },
+                { key: 'req', label: '상담요청', color: 'var(--ink-faded)' },
+            ],
+        },
+    };
+    const view = VIEWS[selectedView] || VIEWS.phone;
+
+    // === 3) Filter rows for current view, build monthly stack & channels ===
+    const monthly = {}; // m -> { stackKey: count, ... }
+    const channels = {};
+    const detail = [];
+    for (const r of allRows) {
+        if (!view.filter(r)) continue;
+        const m = monthFromDate(r.d);
+        const sk = view.stack(r);
+        if (!monthly[m]) monthly[m] = {};
+        monthly[m][sk] = (monthly[m][sk] || 0) + 1;
+        channels[r.ch] = (channels[r.ch] || 0) + 1;
+        detail.push(r);
+    }
+    detail.sort((a, b) => b.d.localeCompare(a.d));
+
+    const months = Object.keys(monthly).sort();
+    const monthTotals = months.map(m => Object.values(monthly[m]).reduce((a,b)=>a+b,0));
+    const maxMonthlyTotal = Math.max(1, ...monthTotals);
+
+    // === 4) Build HTML ===
+    let html = `
+        <div class="center-detail">
+            <div class="cd-header">
+                <div class="cd-title">
+                    <h3>${center}</h3>
+                    <span class="cd-tag">${bonbu}본부</span>
+                </div>
+                <div class="cd-period">
+                    <div>조회 기간</div>
+                    <div class="v">${dateFrom} → ${dateTo}</div>
+                </div>
+            </div>
+            <div class="cd-stats">
+                <button type="button" class="cd-stat-card ${selectedView === 'phone' ? 'active' : ''}" data-view="phone">
+                    <div class="l">등급+유선상담 (신규 인입)<span class="click-hint">${selectedView === 'phone' ? '선택' : '보기'}</span></div>
+                    <div class="v tnum">${fmt(stats.phone)}</div>
+                    <div class="sub">등급 ${fmt(stats.grade)} · 유선 ${fmt(stats.phoneCall)}</div>
+                </button>
+                <button type="button" class="cd-stat-card ${selectedView === 'inperson' ? 'active' : ''}" data-view="inperson">
+                    <div class="l">대면상담<span class="click-hint">${selectedView === 'inperson' ? '선택' : '보기'}</span></div>
+                    <div class="v tnum">${fmt(stats.inperson)}</div>
+                    <div class="sub">${selectedView === 'inperson' ? '현재 보기' : '클릭하여 상세 보기'}</div>
+                </button>
+                <button type="button" class="cd-stat-card ${selectedView === 'contract' ? 'active' : ''}" data-view="contract">
+                    <div class="l">계약상담<span class="click-hint">${selectedView === 'contract' ? '선택' : '보기'}</span></div>
+                    <div class="v tnum">${fmt(stats.contract)}</div>
+                    <div class="sub">${selectedView === 'contract' ? '현재 보기' : '클릭하여 상세 보기'}</div>
+                </button>
+                <button type="button" class="cd-stat-card ${selectedView === 'total' ? 'active' : ''}" data-view="total">
+                    <div class="l">전체 상담<span class="click-hint">${selectedView === 'total' ? '선택' : '보기'}</span></div>
+                    <div class="v tnum">${fmt(stats.total)}</div>
+                    <div class="sub">${selectedView === 'total' ? '현재 보기' : '모든 시트 통합'}</div>
+                </button>
+            </div>`;
+
+    if (months.length > 0) {
+        html += `<div class="cd-chart">
+            <div class="cd-chart-label">${view.chartLabel}</div>
+            <div class="cd-bars">`;
+        months.forEach(m => {
+            const o = monthly[m];
+            const total = Object.values(o).reduce((a,b)=>a+b,0);
+            const h = total / maxMonthlyTotal * 100;
+            // build segments in legend order
+            const segHtml = view.stackLegend.map(leg => {
+                const v = o[leg.key] || 0;
+                if (!v) return '';
+                const segH = total ? (v / total * h) : 0;
+                return `<div class="cd-bar-seg" style="height:${segH}%;background:${leg.color}"></div>`;
+            }).join('');
+            const titleParts = view.stackLegend.map(leg => `${leg.label} ${o[leg.key] || 0}`).join(' · ');
+            html += `<div class="cd-bar-wrap">
+                <div class="cd-bar-num">${total || ''}</div>
+                <div class="cd-bar-stack" style="height:${h}%" title="${m}: ${titleParts}">
+                    ${segHtml}
+                </div>
+                <div class="cd-bar-label">${m.slice(2,4)}년 ${parseInt(m.split('-')[1])}월</div>
+            </div>`;
+        });
+        html += `</div>
+            <div style="display:flex;gap:18px;justify-content:flex-end;margin-top:10px;font-size:11px;color:var(--ink-soft);font-weight:500;flex-wrap:wrap">`;
+        view.stackLegend.forEach(leg => {
+            html += `<span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:${leg.color};border-radius:2px"></span>${leg.label}</span>`;
+        });
+        html += `</div></div>`;
+    }
+
+    html += `<div class="cd-detail-grid">
+        <div class="cd-channels">
+            <div style="font-size:12px;font-weight:600;color:var(--ink-faded)">${view.channelLabel}</div>`;
+    const sortedCh = Object.entries(channels).sort((a, b) => b[1] - a[1]);
+    const channelTotal = sortedCh.reduce((s, [_, v]) => s + v, 0);
+    if (sortedCh.length) {
+        html += `<div class="cd-channels-bar">`;
+        sortedCh.forEach(([ch, n]) => {
+            html += `<div class="seg" style="flex:${n};background:${CHANNEL_COLORS[ch] || '#999'}" title="${ch}: ${n}건"></div>`;
+        });
+        html += `</div><div class="cd-channels-list">`;
+        sortedCh.forEach(([ch, n]) => {
+            const pct = n / channelTotal * 100;
+            html += `<div class="row">
+                <span class="nm"><span class="swatch" style="background:${CHANNEL_COLORS[ch] || '#999'}"></span>${ch}</span>
+                <span><span class="pct">${pct.toFixed(1)}%</span><span class="cnt">${fmt(n)}건</span></span>
+            </div>`;
+        });
+        html += `</div>`;
+    } else {
+        html += `<div style="padding:24px 0;text-align:center;color:var(--ink-faded);font-size:13px">데이터가 없습니다</div>`;
+    }
+    html += `</div>
+        <div class="cd-raw">
+            <div class="cd-raw-header">
+                <span class="l">${view.rawLabel}</span>
+                <span class="meta">${detail.length}건 · ${view.rawSubLabel} · 최신순</span>
+            </div>
+            <div class="cd-raw-table-wrap">`;
+    if (detail.length) {
+        html += `<table class="cd-raw-table">
+            <thead><tr><th>날짜</th><th>유형</th><th>유입경로</th></tr></thead>
+            <tbody>`;
+        detail.forEach(r => {
+            const c = CHANNEL_COLORS[r.ch] || '#999';
+            html += `<tr>
+                <td style="font-weight:500">${r.d}</td>
+                <td><span class="pill ${SHEET_PILL[r.s] || 'req'}">${r.s}</span></td>
+                <td><span class="ch-cell"><span class="swatch" style="background:${c}"></span>${r.ch}</span></td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+    } else {
+        html += `<div class="cd-raw-empty">${view.emptyMsg}</div>`;
+    }
+    html += `</div></div></div></div>`;
+
+    host.innerHTML = html;
+    document.getElementById('centerMeta').textContent = `${center} · ${bonbu}본부`;
+
+    // Wire up view-toggle clicks
+    host.querySelectorAll('.cd-stat-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const v = card.dataset.view;
+            if (v && v !== selectedView) {
+                selectedView = v;
+                renderCenterDetail();
+            }
+        });
+    });
+}
+
+function renderAll() {
+    updateDateSummary();
+    renderBonbuButtons();
+    renderCenterControls();
+    renderCenterDetail();
+    if (monthlyOpen) renderMonthlyTable();
+    else {
+        // still update meta count even when collapsed
+        const stats = getStats();
+        document.getElementById('monthlyToggleMeta').textContent =
+            `${activeBonbu === '' ? '전체 본부' : activeBonbu + '본부'} · 선택 기간 ${fmt(stats.total)}건`;
+    }
+}
+
+// boot
+initDateInputs();
+initMonthlyToggle();
+renderAll();
+
+// Render monthly table once even when collapsed so it's ready when opened first time
+// Use lazy: render on first open
+document.getElementById('monthlyToggle').addEventListener('click', () => {
+    if (monthlyOpen) renderMonthlyTable();
+});
+</script>
+</body>
+</html>
