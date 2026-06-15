@@ -1062,18 +1062,26 @@ function findCenterBonbu(center) {
 }
 function renderCenterDetail() {
     const host = document.getElementById('centerDetailHost');
-    if (!selectedCenter) {
-        host.innerHTML = '<div class="cd-empty">위에서 센터를 선택하면 상세 뷰가 나타납니다.</div>';
-        document.getElementById('centerMeta').textContent = '센터를 선택하세요';
-        return;
+    const isAggregate = !selectedCenter;
+
+    // === Scope: aggregate (전체 센터 통합) or single center ===
+    let center, bonbu, scopeLabel, rowOpts;
+    if (isAggregate) {
+        center = null;
+        bonbu = activeBonbu;
+        scopeLabel = activeBonbu === '' ? '전체 본부' : activeBonbu + '본부';
+        rowOpts = {}; // iterDetail honors activeBonbu + selected date range
+    } else {
+        center = selectedCenter;
+        bonbu = findCenterBonbu(center);
+        scopeLabel = bonbu + '본부';
+        rowOpts = { bonbu: bonbu, center: center };
     }
-    const center = selectedCenter;
-    const bonbu = findCenterBonbu(center);
 
     // === 1) Compute aggregate stats for all 4 cards (always) ===
     const stats = { phone: 0, grade: 0, phoneCall: 0, inperson: 0, contract: 0, total: 0 };
     const allRows = [];
-    for (const r of iterDetail({bonbu: bonbu, center: center})) {
+    for (const r of iterDetail(rowOpts)) {
         stats.total += 1;
         allRows.push(r);
         if (PHONE_SHEETS.includes(r.s)) {
@@ -1157,6 +1165,7 @@ function renderCenterDetail() {
     const monthly = {}; // m -> { stackKey: count, ... }
     const channels = {};
     const detail = [];
+    const centerAgg = {}; // 'bonbu|center' -> { center, bonbu, count } (aggregate only)
     for (const r of allRows) {
         if (!view.filter(r)) continue;
         const m = monthFromDate(r.d);
@@ -1165,6 +1174,11 @@ function renderCenterDetail() {
         monthly[m][sk] = (monthly[m][sk] || 0) + 1;
         channels[r.ch] = (channels[r.ch] || 0) + 1;
         detail.push(r);
+        if (isAggregate) {
+            const ck = r.b + '|' + r.c;
+            if (!centerAgg[ck]) centerAgg[ck] = { center: r.c, bonbu: r.b, count: 0 };
+            centerAgg[ck].count += 1;
+        }
     }
     detail.sort((a, b) => b.d.localeCompare(a.d));
 
@@ -1177,8 +1191,8 @@ function renderCenterDetail() {
         <div class="center-detail">
             <div class="cd-header">
                 <div class="cd-title">
-                    <h3>${center}</h3>
-                    <span class="cd-tag">${bonbu}본부</span>
+                    <h3>${isAggregate ? '전체 센터 통합' : center}</h3>
+                    <span class="cd-tag">${scopeLabel}</span>
                 </div>
                 <div class="cd-period">
                     <div>조회 기간</div>
@@ -1262,33 +1276,66 @@ function renderCenterDetail() {
     } else {
         html += `<div style="padding:24px 0;text-align:center;color:var(--ink-faded);font-size:13px">데이터가 없습니다</div>`;
     }
-    html += `</div>
-        <div class="cd-raw">
+    html += `</div>`;
+    if (isAggregate) {
+        // 전체 센터 통합: 원시 행 대신 센터별 순위 표
+        const ranked = Object.values(centerAgg).sort((a, b) => b.count - a.count);
+        const rankTotal = ranked.reduce((s, x) => s + x.count, 0);
+        html += `<div class="cd-raw">
+            <div class="cd-raw-header">
+                <span class="l">센터별 순위</span>
+                <span class="meta">${ranked.length}개 센터 · ${view.rawSubLabel} · 건수순</span>
+            </div>
+            <div class="cd-raw-table-wrap">`;
+        if (ranked.length) {
+            html += `<table class="cd-raw-table">
+                <thead><tr><th>#</th><th>센터</th><th style="text-align:right">건수</th><th style="text-align:right">비중</th></tr></thead>
+                <tbody>`;
+            ranked.forEach((x, i) => {
+                const pct = rankTotal ? (x.count / rankTotal * 100) : 0;
+                const sub = activeBonbu === '' ? `<span style="color:var(--ink-faded);font-size:11px;margin-left:6px">${x.bonbu}</span>` : '';
+                html += `<tr>
+                    <td style="color:var(--ink-faded);font-weight:600">${i + 1}</td>
+                    <td style="font-weight:500">${x.center}${sub}</td>
+                    <td style="text-align:right;font-weight:600">${fmt(x.count)}</td>
+                    <td style="text-align:right;color:var(--ink-soft)">${pct.toFixed(1)}%</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+        } else {
+            html += `<div class="cd-raw-empty">${view.emptyMsg}</div>`;
+        }
+        html += `</div></div></div></div>`;
+    } else {
+        html += `<div class="cd-raw">
             <div class="cd-raw-header">
                 <span class="l">${view.rawLabel}</span>
                 <span class="meta">${detail.length}건 · ${view.rawSubLabel} · 최신순</span>
             </div>
             <div class="cd-raw-table-wrap">`;
-    if (detail.length) {
-        html += `<table class="cd-raw-table">
-            <thead><tr><th>날짜</th><th>유형</th><th>유입경로</th></tr></thead>
-            <tbody>`;
-        detail.forEach(r => {
-            const c = CHANNEL_COLORS[r.ch] || '#999';
-            html += `<tr>
-                <td style="font-weight:500">${r.d}</td>
-                <td><span class="pill ${SHEET_PILL[r.s] || 'req'}">${r.s}</span></td>
-                <td><span class="ch-cell"><span class="swatch" style="background:${c}"></span>${r.ch}</span></td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-    } else {
-        html += `<div class="cd-raw-empty">${view.emptyMsg}</div>`;
+        if (detail.length) {
+            html += `<table class="cd-raw-table">
+                <thead><tr><th>날짜</th><th>유형</th><th>유입경로</th></tr></thead>
+                <tbody>`;
+            detail.forEach(r => {
+                const c = CHANNEL_COLORS[r.ch] || '#999';
+                html += `<tr>
+                    <td style="font-weight:500">${r.d}</td>
+                    <td><span class="pill ${SHEET_PILL[r.s] || 'req'}">${r.s}</span></td>
+                    <td><span class="ch-cell"><span class="swatch" style="background:${c}"></span>${r.ch}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+        } else {
+            html += `<div class="cd-raw-empty">${view.emptyMsg}</div>`;
+        }
+        html += `</div></div></div></div>`;
     }
-    html += `</div></div></div></div>`;
 
     host.innerHTML = html;
-    document.getElementById('centerMeta').textContent = `${center} · ${bonbu}본부`;
+    document.getElementById('centerMeta').textContent = isAggregate
+        ? `${scopeLabel} · 전체 센터 통합`
+        : `${center} · ${bonbu}본부`;
 
     // Wire up view-toggle clicks
     host.querySelectorAll('.cd-stat-card').forEach(card => {
